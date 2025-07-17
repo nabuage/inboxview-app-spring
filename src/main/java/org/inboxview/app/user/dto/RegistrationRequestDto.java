@@ -1,0 +1,12 @@
+package org.inboxview.app.user.dto;
+
+public record RegistrationRequestDto(
+    String username,
+    String email,
+    String password,
+    String firstName,
+    String lastName,
+    String phone
+) {
+    
+}
