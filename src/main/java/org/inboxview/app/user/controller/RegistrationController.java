@@ -3,6 +3,7 @@ package org.inboxview.app.user.controller;
 import org.inboxview.app.user.dto.RegistrationRequestDto;
 import org.inboxview.app.user.dto.RegistrationResponseDto;
 import org.inboxview.app.user.mapper.RegistrationMapper;
+import org.inboxview.app.user.service.RegistrationService;
 import org.inboxview.app.user.service.UserService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/api/registration")
 @RequiredArgsConstructor
 public class RegistrationController {
-    private final UserService registrationService;
+    private final RegistrationService registrationService;
     private final RegistrationMapper registrationMapper;
 
     @PostMapping("/register")
@@ -27,6 +28,6 @@ public class RegistrationController {
     ) {
         final var registeredUser = registrationService.register(request);
 
-        return ResponseEntity.ok(registrationMapper.toRegistrationResponse(registeredUser));
+        return ResponseEntity.ok(registrationMapper.toRegistrationResponse(registeredUser, Boolean.TRUE));
     }    
 }

@@ -20,13 +20,14 @@ public class RegistrationMapper {
         return user;
     }
 
-    public RegistrationResponseDto toRegistrationResponse(final User user) {
+    public RegistrationResponseDto toRegistrationResponse(final User user, boolean emailVerificationRequired) {
         return new RegistrationResponseDto(
             user.getUsername(),
             user.getEmail(),
             user.getFirstName(),
             user.getLastName(),
-            user.getPhone()
+            user.getPhone(),
+            emailVerificationRequired
         );
     }
 }

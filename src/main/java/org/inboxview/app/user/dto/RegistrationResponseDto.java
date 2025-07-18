@@ -5,7 +5,8 @@ public record RegistrationResponseDto(
     String email,
     String firstName,
     String lastName,
-    String phone
+    String phone,
+    boolean emailVerificationRequired
 ) {
     
 }

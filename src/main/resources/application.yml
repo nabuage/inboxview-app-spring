@@ -8,9 +8,17 @@ spring:
       ddl-auto: update
   datasource:
     url: jdbc:postgresql://localhost:5432/inboxview_app_db1
-    username: USERNAME
-    password: PASSWORD
+    username: ${IV_DATASOURCE_USERNAME}
+    password: ${IV_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+  mail:
+    host: mail.inboxview.com
+    username: ${IV_MAIL_USERNAME}
+    password: ${IV_MAIL_PASSWORD}
+    port: 587
+    properties:
+        "[mail.smtp.auth]": true
+        "[mail.smtp.starttls.enable]": true
 
 jwt:
   private-key: classpath:jwt/app.key
