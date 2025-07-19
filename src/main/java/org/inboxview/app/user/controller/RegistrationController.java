@@ -1,17 +1,20 @@
 package org.inboxview.app.user.controller;
 
 import org.inboxview.app.user.dto.RegistrationRequestDto;
-import org.inboxview.app.user.dto.RegistrationResponseDto;
-import org.inboxview.app.user.mapper.RegistrationMapper;
+import org.inboxview.app.user.dto.UserDto;
+import org.inboxview.app.user.dto.VerifyRequestDto;
+import org.inboxview.app.user.mapper.UserMapper;
 import org.inboxview.app.user.service.RegistrationService;
-import org.inboxview.app.user.service.UserService;
+import org.inboxview.app.user.service.VerificationService;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -20,14 +23,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor
 public class RegistrationController {
     private final RegistrationService registrationService;
-    private final RegistrationMapper registrationMapper;
+    private final VerificationService verificationService;
+    private final UserMapper userMapper;
 
     @PostMapping("/register")
-    public ResponseEntity<RegistrationResponseDto> registerUser(
+    public ResponseEntity<UserDto> registerUser(
         @Valid @RequestBody final RegistrationRequestDto request
     ) {
         final var registeredUser = registrationService.register(request);
 
-        return ResponseEntity.ok(registrationMapper.toRegistrationResponse(registeredUser, Boolean.TRUE));
-    }    
+        return ResponseEntity.ok(userMapper.toDto(registeredUser));
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<UserDto> verify(
+        @RequestParam String id,
+        @RequestParam String code
+    ) {
+        final var verifiedUser = verificationService.verifyEmail(id, code);
+        
+        return ResponseEntity.ok(userMapper.toDto(verifiedUser));
+    }
+    
 }

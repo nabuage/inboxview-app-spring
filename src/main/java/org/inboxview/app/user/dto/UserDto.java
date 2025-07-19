@@ -5,7 +5,8 @@ public record UserDto(
     String usernname,
     String firstName,
     String lastName,
-    String phone
+    String phone,
+    boolean isVerified
 ) {
     
 }

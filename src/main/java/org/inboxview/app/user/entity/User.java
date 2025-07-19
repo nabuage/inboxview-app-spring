@@ -69,6 +69,10 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateDeleted;
 
+    @Column(name = "date_verified")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateVerified;
+
     @Version
     private int version;
 

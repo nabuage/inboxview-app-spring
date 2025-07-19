@@ -22,6 +22,7 @@ public class RegistrationMapper {
 
     public RegistrationResponseDto toRegistrationResponse(final User user, boolean emailVerificationRequired) {
         return new RegistrationResponseDto(
+            user.getGuid(),
             user.getUsername(),
             user.getEmail(),
             user.getFirstName(),

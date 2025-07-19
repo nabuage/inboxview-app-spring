@@ -20,6 +20,9 @@ spring:
         "[mail.smtp.auth]": true
         "[mail.smtp.starttls.enable]": true
 
+app:
+  url: https://www.inboxview.com/
+
 jwt:
   private-key: classpath:jwt/app.key
   public-key: classpath:jwt/app.pub

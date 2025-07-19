@@ -21,7 +21,8 @@ public class UserMapper {
             user.getUsername(),
             user.getFirstName(),
             user.getLastName(),
-            user.getPhone()
+            user.getPhone(),
+            user.getDateVerified() != null
         );
     }
 }
