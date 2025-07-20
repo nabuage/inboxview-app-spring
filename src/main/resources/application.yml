@@ -21,7 +21,7 @@ spring:
         "[mail.smtp.starttls.enable]": true
 
 app:
-  url: https://www.inboxview.com/
+  url: http://localhost:8080/
 
 jwt:
   private-key: classpath:jwt/app.key

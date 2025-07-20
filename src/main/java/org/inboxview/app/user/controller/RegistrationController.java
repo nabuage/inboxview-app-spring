@@ -2,7 +2,7 @@ package org.inboxview.app.user.controller;
 
 import org.inboxview.app.user.dto.RegistrationRequestDto;
 import org.inboxview.app.user.dto.UserDto;
-import org.inboxview.app.user.dto.VerifyRequestDto;
+import org.inboxview.app.user.dto.VerifyResendRequestDto;
 import org.inboxview.app.user.mapper.UserMapper;
 import org.inboxview.app.user.service.RegistrationService;
 import org.inboxview.app.user.service.VerificationService;
@@ -35,8 +35,8 @@ public class RegistrationController {
         return ResponseEntity.ok(userMapper.toDto(registeredUser));
     }
 
-    @GetMapping("/verify")
-    public ResponseEntity<UserDto> verify(
+    @GetMapping("/email/verify")
+    public ResponseEntity<UserDto> verifyEmail(
         @RequestParam String id,
         @RequestParam String code
     ) {
@@ -44,5 +44,11 @@ public class RegistrationController {
         
         return ResponseEntity.ok(userMapper.toDto(verifiedUser));
     }
-    
+
+    @PostMapping("/email/resend-verify")
+    public ResponseEntity<Void> resendEmailVerify(@RequestBody VerifyResendRequestDto request) {
+        verificationService.resendEmailVerification(request.id());
+        
+        return ResponseEntity.noContent().build();
+    }
 }

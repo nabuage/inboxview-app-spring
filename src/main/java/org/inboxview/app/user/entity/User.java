@@ -1,9 +1,6 @@
 package org.inboxview.app.user.entity;
 
-import java.util.Date;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import java.time.OffsetDateTime;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
@@ -57,21 +54,21 @@ public class User {
 
     @Column(name = "date_added", updatable = false, nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    @CreatedDate
-    private Date dateAdded;
+    // @CreatedDate
+    private OffsetDateTime dateAdded;
 
     @Column(name = "date_updated", insertable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    @LastModifiedDate
-    private Date dateUpdated;
+    // @LastModifiedDate
+    private OffsetDateTime dateUpdated;
 
     @Column(name = "date_deleted", insertable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dateDeleted;
+    private OffsetDateTime dateDeleted;
 
     @Column(name = "date_verified")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dateVerified;
+    private OffsetDateTime dateVerified;
 
     @Version
     private int version;

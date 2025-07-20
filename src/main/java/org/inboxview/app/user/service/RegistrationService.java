@@ -1,5 +1,6 @@
 package org.inboxview.app.user.service;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import org.inboxview.app.user.dto.RegistrationRequestDto;
@@ -37,6 +38,7 @@ public class RegistrationService {
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setFirstName(request.firstName());
         user.setLastName(request.lastName());
+        user.setDateAdded(OffsetDateTime.now());
         
         User registeredUser = userRepository.save(user);
 
