@@ -1,7 +1,6 @@
 package org.inboxview.app.user.dto;
 
-public record AuthenticationResponseDto(
-    String token,
+public record RefreshTokenRequestDto(
     String refreshToken
 ) {
     

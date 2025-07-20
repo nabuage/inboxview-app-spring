@@ -27,7 +27,7 @@ import lombok.Setter;
 public class JwtConfig {
     private RSAPrivateKey privateKey;
     private RSAPublicKey publicKey;
-    private Duration ttl;
+    private Duration accessTokenTtl;
 
     @Bean
     public JwtEncoder jwtEncoder() {
@@ -52,6 +52,6 @@ public class JwtConfig {
         final JwtEncoder jwtEncoder,
         final JwtDecoder jwtDecoder
     ) {
-        return new JwtService(appName, ttl, jwtEncoder, jwtDecoder);
+        return new JwtService(appName, accessTokenTtl, jwtEncoder, jwtDecoder);
     }
 }

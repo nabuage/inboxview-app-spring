@@ -26,4 +26,5 @@ app:
 jwt:
   private-key: classpath:jwt/app.key
   public-key: classpath:jwt/app.pub
-  ttl: 15m
+  access-token-ttl: 15m
+  refresh-token-ttl: 1440m

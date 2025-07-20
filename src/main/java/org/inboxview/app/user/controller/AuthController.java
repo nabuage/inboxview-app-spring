@@ -2,6 +2,7 @@ package org.inboxview.app.user.controller;
 
 import org.inboxview.app.user.dto.AuthenticationRequestDto;
 import org.inboxview.app.user.dto.AuthenticationResponseDto;
+import org.inboxview.app.user.dto.RefreshTokenRequestDto;
 import org.inboxview.app.user.service.AuthenticationService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,26 @@ public class AuthController {
         @RequestBody final AuthenticationRequestDto request
     ) {        
         return ResponseEntity.ok(authenticationService.authenticate(request));
+    }
+    
+    @PostMapping("/refresh-token")
+    public ResponseEntity<AuthenticationResponseDto> refreshToken(
+        @RequestBody RefreshTokenRequestDto request
+    ) {        
+        return ResponseEntity.ok(
+            authenticationService.refreshToken(
+                request.refreshToken()
+            )
+        );
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> revokeToken(
+        @RequestBody RefreshTokenRequestDto request
+    ) {
+        authenticationService.revokeRefreshToken(request.refreshToken());
+        
+        return ResponseEntity.noContent().build();
     }
     
     
