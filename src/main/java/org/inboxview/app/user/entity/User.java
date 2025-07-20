@@ -37,9 +37,6 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    // @Column(name = "salt", nullable = false)
-    // private String salt;
-
     @Column(name = "email", nullable = false)
     private String email;
 
@@ -54,12 +51,10 @@ public class User {
 
     @Column(name = "date_added", updatable = false, nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    // @CreatedDate
     private OffsetDateTime dateAdded;
 
     @Column(name = "date_updated", insertable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    // @LastModifiedDate
     private OffsetDateTime dateUpdated;
 
     @Column(name = "date_deleted", insertable = false)

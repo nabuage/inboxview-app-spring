@@ -42,7 +42,6 @@ public class UserVerification {
 
     @Column(name = "date_added")
     @Temporal(TemporalType.TIMESTAMP)
-    // @CreatedDate
     private OffsetDateTime dateAdded;
 
     @Column(name = "date_deleted")
