@@ -11,7 +11,6 @@ import org.inboxview.app.user.entity.RefreshToken;
 import org.inboxview.app.user.repository.RefreshTokenRepository;
 import org.inboxview.app.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Lettuce.Cluster.Refresh;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
