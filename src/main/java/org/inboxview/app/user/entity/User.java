@@ -46,19 +46,15 @@ public class User {
     private String phone;
 
     @Column(name = "date_added", updatable = false, nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private OffsetDateTime dateAdded;
 
     @Column(name = "date_updated", insertable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private OffsetDateTime dateUpdated;
 
     @Column(name = "date_deleted", insertable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private OffsetDateTime dateDeleted;
 
     @Column(name = "date_verified")
-    @Temporal(TemporalType.TIMESTAMP)
     private OffsetDateTime dateVerified;
 
     @Version

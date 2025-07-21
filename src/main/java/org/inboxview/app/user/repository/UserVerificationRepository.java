@@ -1,5 +1,6 @@
 package org.inboxview.app.user.repository;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import org.inboxview.app.user.entity.UserVerification;
@@ -12,6 +13,6 @@ public interface UserVerificationRepository extends JpaRepository<UserVerificati
     Optional<UserVerification> findByUserId(Long userId);
 
     @Modifying
-    @Query("UPDATE UserVerification SET dateDeleted = CURRENT_TIMESTAMP WHERE userId = ?1 AND dateDeleted IS NULL")
-    void deleteByUserId(Long userId);
+    @Query("UPDATE UserVerification SET dateDeleted = ?2 WHERE userId = ?1 AND dateDeleted IS NULL")
+    void setDateDeletedByUserId(Long userId, OffsetDateTime dateDeleted);
 }

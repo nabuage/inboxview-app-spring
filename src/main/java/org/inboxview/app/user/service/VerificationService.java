@@ -109,7 +109,7 @@ public class VerificationService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, USER_NOT_ERROR));
 
         if (user.getDateVerified() != null) {
-            userVerificationRepository.deleteByUserId(user.getId());
+            userVerificationRepository.setDateDeletedByUserId(user.getId(), OffsetDateTime.now());
 
             sendEmailVerification(user.getId());
         }
