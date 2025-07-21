@@ -11,6 +11,7 @@ import org.inboxview.app.user.entity.RefreshToken;
 import org.inboxview.app.user.repository.RefreshTokenRepository;
 import org.inboxview.app.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Lettuce.Cluster.Refresh;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -46,11 +47,12 @@ public class AuthenticationService {
         var user = userRepository.findByUsername(request.username())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setUserId(user.getId());
-        refreshToken.setGuid(UUID.randomUUID().toString());
-        refreshToken.setDateAdded(OffsetDateTime.now());
-        refreshToken.setExpirationDate(OffsetDateTime.now().plus(ttl));
+        RefreshToken refreshToken = RefreshToken.builder()
+            .userId(user.getId())
+            .guid(UUID.randomUUID().toString())
+            .dateAdded(OffsetDateTime.now())
+            .expirationDate(OffsetDateTime.now().plus(ttl))
+            .build();
         refreshTokenRepository.save(refreshToken);
 
         return new AuthenticationResponseDto(token, refreshToken.getGuid());

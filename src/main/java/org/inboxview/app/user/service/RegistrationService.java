@@ -24,21 +24,22 @@ public class RegistrationService {
     @Transactional
     public User register(RegistrationRequestDto request) {
         if (userRepository.existsByUsername(request.username())) {
-                throw new DuplicateException(
-                    USER_EXIST_ERROR
-                );
+            throw new DuplicateException(
+                USER_EXIST_ERROR
+            );
         }
-
-        User user = new User();
-        user.setGuid(UUID.randomUUID().toString());
-        user.setUsername(request.username());
-        user.setEmail(request.email());
-        user.setPassword(passwordEncoder.encode(request.password()));
-        user.setFirstName(request.firstName());
-        user.setLastName(request.lastName());
-        user.setDateAdded(OffsetDateTime.now());
         
-        User registeredUser = userRepository.save(user);
+        User registeredUser = userRepository.save(
+                User.builder()
+                    .guid(UUID.randomUUID().toString())
+                    .username(request.username())
+                    .email(request.email())
+                    .password(passwordEncoder.encode(request.password()))
+                    .firstName(request.firstName())
+                    .lastName(request.lastName())
+                    .dateAdded(OffsetDateTime.now())
+                    .build()
+            );
 
         verificationService.sendEmailVerification(registeredUser.getId());
         
