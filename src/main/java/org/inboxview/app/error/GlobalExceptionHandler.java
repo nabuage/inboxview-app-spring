@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,6 +19,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException exception) {
         HttpStatus status = getRuntimeExceptionHttpStatus(exception);
+
+        return ResponseEntity
+            .status(status)
+            .body(
+                new ErrorResponse(createErrorId(), exception.getMessage(), status.value())
+            );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleBadCredenialsxception(BadCredentialsException exception) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         return ResponseEntity
             .status(status)
