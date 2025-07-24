@@ -3,8 +3,10 @@ package org.inboxview.app.user.service;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
-import org.inboxview.app.user.entity.User;
+
+import org.inboxview.app.user.dto.UserDto;
 import org.inboxview.app.user.entity.UserVerification;
+import org.inboxview.app.user.mapper.UserMapper;
 import org.inboxview.app.user.repository.UserRepository;
 import org.inboxview.app.user.repository.UserVerificationRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +26,7 @@ public class VerificationService {
     private final UserRepository userRepository;
     private final UserVerificationRepository userVerificationRepository;
     private final JavaMailSender mailSender;
+    private final UserMapper userMapper;
     private final static String SUBJECT = "Email verification";
     private final static String BODY = "Here's your link to verify your email: %sapi/registration/email/verify?id=%s&code=%s";
     private final static int MAX_ATTEMPT_COUNT = 10;
@@ -69,7 +72,7 @@ public class VerificationService {
     }
 
     @Transactional
-    public User verifyEmail(String userGuid, String code) {
+    public UserDto verifyEmail(String userGuid, String code) {
         return userRepository.findByGuid(userGuid).map(user -> {
                 return userVerificationRepository.findByUserId(user.getId())
                     .map(verification -> {
@@ -89,7 +92,7 @@ public class VerificationService {
                             user.setDateUpdated(dateVerified);
                             userRepository.save(user);
 
-                            return user;
+                            return userMapper.toDto(user);
                         }
                         else {
                             verification.setAttemptCount(verification.getAttemptCount() + 1);

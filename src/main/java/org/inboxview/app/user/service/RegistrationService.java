@@ -5,7 +5,9 @@ import java.util.UUID;
 
 import org.inboxview.app.error.DuplicateException;
 import org.inboxview.app.user.dto.RegistrationRequestDto;
+import org.inboxview.app.user.dto.UserDto;
 import org.inboxview.app.user.entity.User;
+import org.inboxview.app.user.mapper.UserMapper;
 import org.inboxview.app.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,9 +22,10 @@ public class RegistrationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final VerificationService verificationService;
+    private final UserMapper userMapper;
 
     @Transactional
-    public User register(RegistrationRequestDto request) {
+    public UserDto register(RegistrationRequestDto request) {
         if (userRepository.existsByUsername(request.username())) {
             throw new DuplicateException(
                 USER_EXIST_ERROR
@@ -43,7 +46,7 @@ public class RegistrationService {
 
         verificationService.sendEmailVerification(registeredUser.getId());
         
-        return registeredUser;
+        return userMapper.toDto(registeredUser);
     }
     
 }

@@ -8,11 +8,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.time.OffsetDateTime;
-
 import org.inboxview.app.error.DuplicateException;
 import org.inboxview.app.user.dto.RegistrationRequestDto;
-import org.inboxview.app.user.entity.User;
+import org.inboxview.app.user.dto.UserDto;
 import org.inboxview.app.user.service.RegistrationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,22 +27,21 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @RunWith(SpringRunner.class)
 // @Import(RegistrationMapper.class)
 public class RegistrationControllerTest extends BaseControllerTest {
+    private final String PASSWORD = "password";
 
     @MockitoBean
     private RegistrationService registrationService;
 
-    private User user;
+    private UserDto user;
     private String jsonRequest;
 
     @BeforeEach
     public void setup() {
-        user = User.builder()
+        user = UserDto.builder()
             .username("username")
-            .password("password")
             .email("email@inboxview.com")
             .firstName("firstname")
             .lastName("lastname")
-            .dateAdded(OffsetDateTime.now())
             .build();
 
         jsonRequest = """
@@ -56,11 +53,11 @@ public class RegistrationControllerTest extends BaseControllerTest {
                     "lastName": "%s"
                 }
             """.formatted(
-                user.getUsername(),
-                user.getPassword(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName()
+                user.username(),
+                PASSWORD,
+                user.email(),
+                user.firstName(),
+                user.lastName()
             );
     }
 
@@ -74,11 +71,11 @@ public class RegistrationControllerTest extends BaseControllerTest {
             .content(jsonRequest)
         )
         .andExpect(status().isOk())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.username").value(user.getUsername()))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(user.getEmail()))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value(user.getFirstName()))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.lastName").value(user.getLastName()))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.phone").value(user.getPhone()))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.username").value(user.username()))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(user.email()))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value(user.firstName()))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.lastName").value(user.lastName()))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.phone").value(user.phone()))
         .andExpect(MockMvcResultMatchers.jsonPath("$.isVerified").value(Boolean.FALSE));
 
         verify(registrationService, times(1)).register(any());

@@ -3,7 +3,6 @@ package org.inboxview.app.user.controller;
 import org.inboxview.app.user.dto.RegistrationRequestDto;
 import org.inboxview.app.user.dto.UserDto;
 import org.inboxview.app.user.dto.VerifyResendRequestDto;
-import org.inboxview.app.user.mapper.UserMapper;
 import org.inboxview.app.user.service.RegistrationService;
 import org.inboxview.app.user.service.VerificationService;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,26 +22,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor
 public class RegistrationController {
     private final RegistrationService registrationService;
-    private final VerificationService verificationService;
-    private final UserMapper userMapper;
+    private final VerificationService verificationService;    
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> registerUser(
         @Valid @RequestBody final RegistrationRequestDto request
     ) {
-        final var registeredUser = registrationService.register(request);
-
-        return ResponseEntity.ok(userMapper.toDto(registeredUser));
+        return ResponseEntity.ok(registrationService.register(request));
     }
 
     @GetMapping("/email/verify")
     public ResponseEntity<UserDto> verifyEmail(
         @RequestParam String id,
         @RequestParam String code
-    ) {
-        final var verifiedUser = verificationService.verifyEmail(id, code);
-        
-        return ResponseEntity.ok(userMapper.toDto(verifiedUser));
+    ) {        
+        return ResponseEntity.ok(verificationService.verifyEmail(id, code));
     }
 
     @PostMapping("/email/resend-verify")
