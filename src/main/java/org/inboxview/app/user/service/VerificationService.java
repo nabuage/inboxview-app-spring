@@ -35,7 +35,7 @@ public class VerificationService {
     private final static String USER_NOT_ERROR = "Not found.";
     private final static String ALREADY_VERIFIED_ERROR = "Email already verified.";
 
-    @Value("${spring.mail.username}")
+    @Value("${app.from-email}")
     private String FROM;
 
     @Value("${app.url}")
