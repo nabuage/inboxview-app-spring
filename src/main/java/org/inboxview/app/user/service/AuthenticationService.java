@@ -29,7 +29,8 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    private final static String INVALID_REFRESH_TOKEN = "Invalid refresh token.";
+    private final static String INVALID_CREDENTIALS = "Invalid credentials.";
+
     @Value("${jwt.refresh-token-ttl}")
     private Duration ttl;
 
@@ -44,7 +45,7 @@ public class AuthenticationService {
         final var token = jwtService.generateToken(request.username());
 
         var user = userRepository.findByUsername(request.username())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+            .orElseThrow(() -> new BadCredentialsException(INVALID_CREDENTIALS));
 
         RefreshToken refreshToken = RefreshToken.builder()
             .userId(user.getId())
@@ -60,14 +61,14 @@ public class AuthenticationService {
     public AuthenticationResponseDto refreshToken(String refreshToken) {
         final var refreshTokenE = refreshTokenRepository
             .findByGuidAndExpirationDateAfter(refreshToken, OffsetDateTime.now())
-            .orElseThrow(() -> new BadCredentialsException(INVALID_REFRESH_TOKEN));
+            .orElseThrow(() -> new BadCredentialsException(INVALID_CREDENTIALS));
 
         final var user = userRepository.findById(refreshTokenE.getUserId())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, INVALID_REFRESH_TOKEN));
+            .orElseThrow(() -> new BadCredentialsException(INVALID_CREDENTIALS));
 
-        final var token = jwtService.generateToken(user.getUsername());
+        final var acessToken = jwtService.generateToken(user.getUsername());
 
-        return new AuthenticationResponseDto(token, refreshToken);
+        return new AuthenticationResponseDto(acessToken, refreshToken);
     }
 
     @Transactional

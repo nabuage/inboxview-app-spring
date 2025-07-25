@@ -53,7 +53,7 @@ public class AuthControllerTest extends BaseControllerTest {
     @Test
     public void testAuthenticateReturnsSuccess() throws Exception {
         AuthenticationResponseDto response = AuthenticationResponseDto.builder()
-            .token("token")
+            .accessToken("token")
             .refreshToken("refreshtoken")
             .build();
         
@@ -65,7 +65,7 @@ public class AuthControllerTest extends BaseControllerTest {
             .content(jsonRequest)
         )
         .andExpect(status().isOk())
-        .andExpect(MockMvcResultMatchers.jsonPath("$.token").value(response.token()))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.accessToken").value(response.accessToken()))
         .andExpect(MockMvcResultMatchers.jsonPath("$.refreshToken").value(response.refreshToken()));
 
         verify(authenticationService, times(1)).authenticate(any());
