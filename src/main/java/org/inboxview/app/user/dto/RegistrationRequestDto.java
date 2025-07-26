@@ -1,5 +1,8 @@
 package org.inboxview.app.user.dto;
 
+import lombok.Builder;
+
+@Builder
 public record RegistrationRequestDto(
     String username,
     String email,
