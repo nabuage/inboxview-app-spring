@@ -19,24 +19,20 @@ import org.inboxview.app.user.repository.RefreshTokenRepository;
 import org.inboxview.app.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AuthenticationServiceTest {
     private static final String jwtToken = "jwt-token";
     private static final String BAD_CREDENTIALS_EXCEPTION = "Invalid credentials.";
@@ -87,7 +83,7 @@ public class AuthenticationServiceTest {
         var authToken = UsernamePasswordAuthenticationToken
             .unauthenticated(request.username(), request.password());
 
-        when(authenticationManager.authenticate(authentication)).thenReturn(authToken);
+        when(authenticationManager.authenticate(authToken)).thenReturn(authentication);
         when(jwtService.generateToken(request.username())).thenReturn(jwtToken);
         when(userRepository.findByUsername(request.username())).thenReturn(Optional.of(user));
         when(refreshTokenRepository.save(any(RefreshToken.class))).thenAnswer(paramters -> {
@@ -110,7 +106,7 @@ public class AuthenticationServiceTest {
         var authToken = UsernamePasswordAuthenticationToken
             .unauthenticated(request.username(), request.password());
 
-        when(authenticationManager.authenticate(authentication)).thenReturn(authToken);
+        when(authenticationManager.authenticate(authToken)).thenReturn(authentication);
         when(jwtService.generateToken(request.username())).thenReturn(jwtToken);
         when(userRepository.findByUsername(request.username())).thenThrow(new BadCredentialsException(BAD_CREDENTIALS_EXCEPTION));
 
