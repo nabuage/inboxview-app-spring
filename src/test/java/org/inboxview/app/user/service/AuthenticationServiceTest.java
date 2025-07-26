@@ -114,11 +114,11 @@ public class AuthenticationServiceTest {
         when(jwtService.generateToken(request.username())).thenReturn(jwtToken);
         when(userRepository.findByUsername(request.username())).thenThrow(new BadCredentialsException(BAD_CREDENTIALS_EXCEPTION));
 
-        Exception exception = assertThrows(BadCredentialsException.class, () -> {
+        Exception result = assertThrows(BadCredentialsException.class, () -> {
             authenticationService.authenticate(request);
         });
 
-        assertThat(exception.getMessage()).isEqualTo(BAD_CREDENTIALS_EXCEPTION);
+        assertThat(result.getMessage()).isEqualTo(BAD_CREDENTIALS_EXCEPTION);
 
         verify(userRepository, times(1)).findByUsername(any());
     }

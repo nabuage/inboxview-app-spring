@@ -1,11 +1,17 @@
 package org.inboxview.app.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.inboxview.app.error.DuplicateException;
 import org.inboxview.app.user.dto.RegistrationRequestDto;
 import org.inboxview.app.user.dto.UserDto;
 import org.inboxview.app.user.entity.User;
@@ -13,11 +19,9 @@ import org.inboxview.app.user.mapper.UserMapper;
 import org.inboxview.app.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -77,14 +81,36 @@ public class RegistrationServiceTest {
 
     @Test
     public void testRegisterReturnsSuccess() {
+        when(userRepository.existsByUsername(anyString())).thenReturn(Boolean.FALSE);
         when(userRepository.save(any(User.class))).thenReturn(user);
         doNothing().when(verificationService).sendEmailVerification(anyLong());
-        when(passwordEncoder.encode(user.getPassword())).thenReturn("encodedPassword");
+        when(passwordEncoder.encode(user.getPassword())).thenReturn("encoded-password");
         when(userMapper.toDto(user)).thenReturn(userDto);
 
         var result = registrationService.register(request);
 
         assertThat(result).isEqualTo(userDto);
+
+        verify(userRepository, times(1)).existsByUsername(anyString());
+        verify(userRepository, times(1)).save(any());
+        verify(verificationService, times(1)).sendEmailVerification(anyLong());
+        verify(userMapper, times(1)).toDto(any());
+    }
+
+    @Test
+    public void testRegisterReturnsDuplicateException() {
+        when(userRepository.existsByUsername(anyString())).thenReturn(Boolean.TRUE);
+
+        Exception result = assertThrows(DuplicateException.class, () -> {
+            registrationService.register(request);
+        });
+
+        assertThat(result.getMessage()).isEqualTo("Username already exists.");
+
+        verify(userRepository, times(1)).existsByUsername(anyString());
+        verify(userRepository, never()).save(any());
+        verify(verificationService, never()).sendEmailVerification(anyLong());
+        verify(userMapper, never()).toDto(any());
     }
     
 }
