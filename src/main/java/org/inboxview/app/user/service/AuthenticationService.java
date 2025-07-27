@@ -11,13 +11,10 @@ import org.inboxview.app.user.entity.RefreshToken;
 import org.inboxview.app.user.repository.RefreshTokenRepository;
 import org.inboxview.app.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
