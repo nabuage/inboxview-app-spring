@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: inboxview-app
+  docker:
+    compose:
+      skip:
+        in-tests: false
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+        "[mail.smtp.auth]": false
+        "[mail.smtp.starttls.enable]": false
+
+app:
+  url: http://localhost:8080/
+  from-email: george@inboxview.com
+
+jwt:
+  private-key: classpath:jwt/app.key
+  public-key: classpath:jwt/app.pub
+  access-token-ttl: 15m
+  refresh-token-ttl: 1440m

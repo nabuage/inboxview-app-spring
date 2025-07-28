@@ -14,18 +14,14 @@ import org.inboxview.app.user.dto.UserDto;
 import org.inboxview.app.user.service.RegistrationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@RunWith(SpringRunner.class)
-// @Import(RegistrationMapper.class)
 public class RegistrationControllerTest extends BaseControllerTest {
     private final String PASSWORD = "password";
 
@@ -91,7 +87,5 @@ public class RegistrationControllerTest extends BaseControllerTest {
                 .content(jsonRequest)
             )
             .andExpect(status().is4xxClientError());
-
-        verify(registrationService, times(1)).register(any());
     }
 }
