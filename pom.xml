@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.inboxview</groupId>
-	<artifactId>app</artifactId>
+	<artifactId>inboxview-app</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>app</name>
 	<description>Inboxview App</description>
