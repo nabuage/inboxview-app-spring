@@ -24,7 +24,6 @@ public class RegistrationService {
     private final VerificationService verificationService;
     private final UserMapper userMapper;
 
-    @Transactional
     public UserDto register(RegistrationRequestDto request) {
         if (userRepository.existsByUsername(request.username())) {
             throw new DuplicateException(
