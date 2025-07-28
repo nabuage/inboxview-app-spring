@@ -32,7 +32,7 @@ public class RegistrationService {
             );
         }
         
-        User registeredUser = userRepository.save(
+        User registeredUser = userRepository.saveAndFlush(
                 User.builder()
                     .guid(UUID.randomUUID().toString())
                     .username(request.username())

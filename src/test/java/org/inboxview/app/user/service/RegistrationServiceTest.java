@@ -79,7 +79,7 @@ public class RegistrationServiceTest {
     @Test
     public void testRegisterReturnsSuccess() {
         when(userRepository.existsByUsername(anyString())).thenReturn(Boolean.FALSE);
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userRepository.saveAndFlush(any(User.class))).thenReturn(user);
         doNothing().when(verificationService).sendEmailVerification(anyLong());
         when(passwordEncoder.encode(user.getPassword())).thenReturn("encoded-password");
         when(userMapper.toDto(user)).thenReturn(userDto);
@@ -89,7 +89,7 @@ public class RegistrationServiceTest {
         assertThat(result).isEqualTo(userDto);
 
         verify(userRepository, times(1)).existsByUsername(anyString());
-        verify(userRepository, times(1)).save(any());
+        verify(userRepository, times(1)).saveAndFlush(any());
         verify(verificationService, times(1)).sendEmailVerification(anyLong());
         verify(userMapper, times(1)).toDto(any());
     }
