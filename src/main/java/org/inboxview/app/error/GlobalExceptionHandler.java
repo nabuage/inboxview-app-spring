@@ -50,6 +50,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException exception) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+
+        return ResponseEntity
+            .status(status)
+            .body(
+                new ErrorResponse(createErrorId(), exception.getMessage(), status.value())
+            );
+    }
+
+    @ExceptionHandler
     public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
