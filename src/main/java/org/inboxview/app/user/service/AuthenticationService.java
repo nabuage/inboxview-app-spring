@@ -70,7 +70,7 @@ public class AuthenticationService {
     public AuthenticationResponseDto refreshToken(
         final RefreshTokenRequestDto request
     ) {
-        final var refreshTokenE = refreshTokenRepository
+        final var refreshToken = refreshTokenRepository
             .findByGuidAndAccessTokenAndExpirationDateAfter(
                 request.refreshToken(),
                 request.accessToken(),
@@ -78,12 +78,15 @@ public class AuthenticationService {
             )
             .orElseThrow(() -> new BadCredentialsException(INVALID_CREDENTIALS));
 
-        final var user = userRepository.findById(refreshTokenE.getUserId())
+        final var user = userRepository.findById(refreshToken.getUserId())
             .orElseThrow(() -> new BadCredentialsException(INVALID_CREDENTIALS));
 
-        final var acessToken = jwtService.generateToken(user.getUsername());
+        final var accessToken = jwtService.generateToken(user.getUsername());
 
-        return new AuthenticationResponseDto(acessToken, request.refreshToken());
+        refreshToken.setAccessToken(accessToken);
+        refreshToken.setExpirationDate(OffsetDateTime.now().plus(ttl));
+
+        return new AuthenticationResponseDto(accessToken, request.refreshToken());
     }
 
     @Transactional
