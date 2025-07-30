@@ -5,8 +5,10 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import org.inboxview.app.config.JwtService;
+import org.inboxview.app.error.InvalidRequest;
 import org.inboxview.app.user.dto.AuthenticationRequestDto;
 import org.inboxview.app.user.dto.AuthenticationResponseDto;
+import org.inboxview.app.user.dto.RefreshTokenRequestDto;
 import org.inboxview.app.user.entity.RefreshToken;
 import org.inboxview.app.user.repository.RefreshTokenRepository;
 import org.inboxview.app.user.repository.UserRepository;
@@ -27,6 +29,7 @@ public class AuthenticationService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     private final static String INVALID_CREDENTIALS = "Invalid credentials.";
+    private final static String NOT_VERIFIED = "User is not verified.";
 
     @Value("${jwt.refresh-token-ttl}")
     private Duration ttl;
@@ -37,27 +40,42 @@ public class AuthenticationService {
         final var authToken = UsernamePasswordAuthenticationToken
             .unauthenticated(request.username(), request.password());
 
-        final var authentication = authenticationManager.authenticate(authToken);
-
-        final var token = jwtService.generateToken(request.username());
+        try {
+            authenticationManager.authenticate(authToken);
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException(INVALID_CREDENTIALS);
+        }
 
         var user = userRepository.findByUsername(request.username())
             .orElseThrow(() -> new BadCredentialsException(INVALID_CREDENTIALS));
 
+        if (user.getDateVerified() == null) {
+            throw new InvalidRequest(NOT_VERIFIED);
+        }
+
+        final var accessToken = jwtService.generateToken(request.username());
+
         RefreshToken refreshToken = RefreshToken.builder()
             .userId(user.getId())
             .guid(UUID.randomUUID().toString())
+            .accessToken(accessToken)
             .dateAdded(OffsetDateTime.now())
             .expirationDate(OffsetDateTime.now().plus(ttl))
             .build();
         refreshTokenRepository.save(refreshToken);
 
-        return new AuthenticationResponseDto(token, refreshToken.getGuid());
+        return new AuthenticationResponseDto(accessToken, refreshToken.getGuid());
     }
 
-    public AuthenticationResponseDto refreshToken(String refreshToken) {
+    public AuthenticationResponseDto refreshToken(
+        final RefreshTokenRequestDto request
+    ) {
         final var refreshTokenE = refreshTokenRepository
-            .findByGuidAndExpirationDateAfter(refreshToken, OffsetDateTime.now())
+            .findByGuidAndAccessTokenAndExpirationDateAfter(
+                request.refreshToken(),
+                request.accessToken(),
+                OffsetDateTime.now()
+            )
             .orElseThrow(() -> new BadCredentialsException(INVALID_CREDENTIALS));
 
         final var user = userRepository.findById(refreshTokenE.getUserId())
@@ -65,7 +83,7 @@ public class AuthenticationService {
 
         final var acessToken = jwtService.generateToken(user.getUsername());
 
-        return new AuthenticationResponseDto(acessToken, refreshToken);
+        return new AuthenticationResponseDto(acessToken, request.refreshToken());
     }
 
     @Transactional

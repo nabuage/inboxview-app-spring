@@ -27,6 +27,9 @@ public class RefreshToken {
     @Column(name = "refresh_token_guid", nullable = false)
     private String guid;
 
+    @Column(name = "access_token", columnDefinition = "TEXT", nullable = false)
+    private String accessToken;
+
     @Column(name = "user_id", nullable = false)
     private Long userId;
 

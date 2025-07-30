@@ -2,6 +2,8 @@ package org.inboxview.app.user.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,7 +14,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.inboxview.app.config.JwtService;
+import org.inboxview.app.error.InvalidRequest;
 import org.inboxview.app.user.dto.AuthenticationRequestDto;
+import org.inboxview.app.user.dto.RefreshTokenRequestDto;
 import org.inboxview.app.user.entity.RefreshToken;
 import org.inboxview.app.user.entity.User;
 import org.inboxview.app.user.repository.RefreshTokenRepository;
@@ -36,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class AuthenticationServiceTest {
     private static final String jwtToken = "jwt-token";
     private static final String BAD_CREDENTIALS_EXCEPTION = "Invalid credentials.";
+    private static final String NOT_VERIFIED = "User is not verified.";
 
     @InjectMocks
     private AuthenticationService authenticationService;
@@ -69,6 +74,7 @@ public class AuthenticationServiceTest {
             .email("email@inboxview.com")
             .firstName("firstname")
             .lastName("lastname")
+            .dateVerified(OffsetDateTime.now())
             .build();
 
         request = AuthenticationRequestDto.builder()
@@ -98,8 +104,25 @@ public class AuthenticationServiceTest {
         assertThat(result.accessToken()).isEqualTo(jwtToken);
         assertThat(result.refreshToken()).isEqualTo(refreshTokenGuid);
 
+        verify(authenticationManager, times(1)).authenticate(any());
+        verify(jwtService, times(1)).generateToken(anyString());
         verify(refreshTokenRepository, times(1)).save(any());
     }
+
+    @Test
+    public void testAuthenticateReturnsInvalidPasswordBadCredentialsException() {
+        var authToken = UsernamePasswordAuthenticationToken
+            .unauthenticated(request.username(), request.password());
+
+        when(authenticationManager.authenticate(authToken)).thenThrow(new BadCredentialsException(BAD_CREDENTIALS_EXCEPTION));
+
+        Exception result = assertThrows(BadCredentialsException.class, () -> {
+            authenticationService.authenticate(request);
+        });
+
+        assertThat(result.getMessage()).isEqualTo(BAD_CREDENTIALS_EXCEPTION);
+
+        verify(authenticationManager, times(1)).authenticate(any());    }
 
     @Test
     public void testAuthenticateReturnsBadCredentialsException() {
@@ -107,7 +130,6 @@ public class AuthenticationServiceTest {
             .unauthenticated(request.username(), request.password());
 
         when(authenticationManager.authenticate(authToken)).thenReturn(authentication);
-        when(jwtService.generateToken(request.username())).thenReturn(jwtToken);
         when(userRepository.findByUsername(request.username())).thenThrow(new BadCredentialsException(BAD_CREDENTIALS_EXCEPTION));
 
         Exception result = assertThrows(BadCredentialsException.class, () -> {
@@ -116,7 +138,33 @@ public class AuthenticationServiceTest {
 
         assertThat(result.getMessage()).isEqualTo(BAD_CREDENTIALS_EXCEPTION);
 
+        verify(authenticationManager, times(1)).authenticate(any());
         verify(userRepository, times(1)).findByUsername(any());
+    }
+
+    @Test
+    public void testAuthenticateReturnsUnverifiedUserInvalidRequestException() {
+        var authToken = UsernamePasswordAuthenticationToken
+            .unauthenticated(request.username(), request.password());
+        var unverifiedUser = User.builder()
+            .id(1L)
+            .username("username")
+            .password("password")
+            .email("email@inboxview.com")
+            .firstName("firstname")
+            .lastName("lastname")
+            .build();
+
+        when(authenticationManager.authenticate(authToken)).thenReturn(authentication);
+        when(userRepository.findByUsername(request.username())).thenReturn(Optional.of(unverifiedUser));
+
+        Exception result = assertThrows(InvalidRequest.class, () -> {
+            authenticationService.authenticate(request);
+        });
+
+        assertThat(result.getMessage()).isEqualTo(NOT_VERIFIED);
+
+        verify(authenticationManager, times(1)).authenticate(any());
     }
 
     @Test
@@ -124,15 +172,20 @@ public class AuthenticationServiceTest {
         RefreshToken refreshToken = RefreshToken.builder()
             .userId(user.getId())
             .guid(UUID.randomUUID().toString())
+            .accessToken(jwtToken)
             .dateAdded(OffsetDateTime.now())
             .expirationDate(OffsetDateTime.now().plus(Duration.ofDays(1)))
             .build();
+        var refreshTokenRequestDto = RefreshTokenRequestDto.builder()
+            .accessToken(jwtToken)
+            .refreshToken(refreshToken.getGuid())
+            .build();
 
-        when(refreshTokenRepository.findByGuidAndExpirationDateAfter(any(), any())).thenReturn(Optional.of(refreshToken));
+        when(refreshTokenRepository.findByGuidAndAccessTokenAndExpirationDateAfter(any(), any(), any())).thenReturn(Optional.of(refreshToken));
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
         when(jwtService.generateToken(request.username())).thenReturn(jwtToken);
         
-        var result = authenticationService.refreshToken(refreshToken.getGuid());
+        var result = authenticationService.refreshToken(refreshTokenRequestDto);
 
         assertThat(result.accessToken()).isEqualTo(jwtToken);
         assertThat(result.refreshToken()).isEqualTo(refreshToken.getGuid());
@@ -145,19 +198,24 @@ public class AuthenticationServiceTest {
         RefreshToken refreshToken = RefreshToken.builder()
             .userId(user.getId())
             .guid(UUID.randomUUID().toString())
+            .accessToken(jwtToken)
             .dateAdded(OffsetDateTime.now())
             .expirationDate(OffsetDateTime.now().plus(Duration.ofDays(1)))
             .build();
+        var refreshTokenRequestDto = RefreshTokenRequestDto.builder()
+            .accessToken(jwtToken)
+            .refreshToken(refreshToken.getGuid())
+            .build();
 
-        when(refreshTokenRepository.findByGuidAndExpirationDateAfter(any(), any())).thenThrow(new BadCredentialsException(BAD_CREDENTIALS_EXCEPTION));
+        when(refreshTokenRepository.findByGuidAndAccessTokenAndExpirationDateAfter(any(), any(), any())).thenThrow(new BadCredentialsException(BAD_CREDENTIALS_EXCEPTION));
         
         Exception exception = assertThrows(BadCredentialsException.class, () -> {
-            authenticationService.refreshToken(refreshToken.getGuid());
+            authenticationService.refreshToken(refreshTokenRequestDto);
         });
 
         assertThat(exception.getMessage()).isEqualTo(BAD_CREDENTIALS_EXCEPTION);
 
-        verify(refreshTokenRepository, times(1)).findByGuidAndExpirationDateAfter(any(), any());
+        verify(refreshTokenRepository, times(1)).findByGuidAndAccessTokenAndExpirationDateAfter(any(), any(), any());
     }
 
     @Test
@@ -168,12 +226,16 @@ public class AuthenticationServiceTest {
             .dateAdded(OffsetDateTime.now())
             .expirationDate(OffsetDateTime.now().plus(Duration.ofDays(1)))
             .build();
+        var refreshTokenRequestDto = RefreshTokenRequestDto.builder()
+            .accessToken(jwtToken)
+            .refreshToken(refreshToken.getGuid())
+            .build();
 
-        when(refreshTokenRepository.findByGuidAndExpirationDateAfter(any(), any())).thenReturn(Optional.of(refreshToken));
+        when(refreshTokenRepository.findByGuidAndAccessTokenAndExpirationDateAfter(any(), any(), any())).thenReturn(Optional.of(refreshToken));
         when(userRepository.findById(anyLong())).thenThrow(new BadCredentialsException(BAD_CREDENTIALS_EXCEPTION));
 
         Exception exception = assertThrows(BadCredentialsException.class, () -> {
-            authenticationService.refreshToken(refreshToken.getGuid());
+            authenticationService.refreshToken(refreshTokenRequestDto);
         });
 
         assertThat(exception.getMessage()).isEqualTo(BAD_CREDENTIALS_EXCEPTION);

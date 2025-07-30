@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
-    Optional<RefreshToken> findByGuidAndExpirationDateAfter(String guid, OffsetDateTime expirationDate);
+    Optional<RefreshToken> findByGuidAndAccessTokenAndExpirationDateAfter(String guid, String accessToken, OffsetDateTime expirationDate);
 
     void deleteByGuid(String guid);
 }

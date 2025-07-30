@@ -32,9 +32,7 @@ public class AuthController {
         @RequestBody RefreshTokenRequestDto request
     ) {        
         return ResponseEntity.ok(
-            authenticationService.refreshToken(
-                request.refreshToken()
-            )
+            authenticationService.refreshToken(request)
         );
     }
 
@@ -46,6 +44,4 @@ public class AuthController {
         
         return ResponseEntity.noContent().build();
     }
-    
-    
 }
