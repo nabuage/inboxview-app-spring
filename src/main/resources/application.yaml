@@ -6,6 +6,10 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: create-drop
+    show-sql: true
+    properties:
+        hibernate:
+            format_sql: true
   datasource:
     url: ${IV_DATASOURCE_URL}
     username: ${IV_DATASOURCE_USERNAME}
@@ -21,6 +25,17 @@ spring:
         "[mail.smtp.socketFactory.fallback]": false
         "[mail.smtp.socketFactory.port]": 465
         "[mail.smtp.startssl.enable]": true
+
+springdoc:
+    api-docs:
+        path: /api-docs
+    swagger-ui:
+        path: /swagger-ui.html
+        enabled: true
+
+logging:
+    level: 
+        root: INFO
 
 app:
   url: ${IV_URL}
