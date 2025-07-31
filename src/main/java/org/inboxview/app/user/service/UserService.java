@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final static String USER_NOT_FOUND_ERROR = "User is not found.";
+    private static final String USER_NOT_FOUND_ERROR = "User is not found.";
     private final UserRepository userRepository; 
     private final UserMapper userMapper;   
 

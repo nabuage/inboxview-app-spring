@@ -31,10 +31,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class RegistrationControllerTest extends BaseControllerTest {
-    private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private final static String USER_EXIST_ERROR = "Username already exists.";
-    private final static String USER_NOT_FOUND_ERROR = "User is not found.";
-    private final static String ALREADY_VERIFIED_ERROR = "Email already verified.";
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final String USER_EXIST_ERROR = "Username already exists.";
+    private static final String USER_NOT_FOUND_ERROR = "User is not found.";
+    private static final String ALREADY_VERIFIED_ERROR = "Email already verified.";
     private final String PASSWORD = "password";
 
     @MockitoBean

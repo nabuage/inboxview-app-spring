@@ -31,8 +31,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +53,7 @@ public class VerificationServiceTest {
     UserRepository userRepository;
 
     @Mock
-    JavaMailSender javaMailSender;
+    MessageSenderService messageSenderService;
 
     @Spy
     UserMapper userMapper;
@@ -99,13 +97,13 @@ public class VerificationServiceTest {
 
         when(userVerificationRepository.save(any())).thenReturn(userVerification);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        doNothing().when(javaMailSender).send(any(SimpleMailMessage.class));
+        doNothing().when(messageSenderService).sendEmail(anyString(), anyString(), anyString());
 
         verificationService.sendEmailVerification(user.getId());
 
         verify(userVerificationRepository, times(1)).save(any());
         verify(userRepository, times(1)).findById(anyLong());
-        verify(javaMailSender, times(1)).send(any(SimpleMailMessage.class));
+        verify(messageSenderService, times(1)).sendEmail(anyString(), anyString(), anyString());
     }
 
     @Test
@@ -120,7 +118,7 @@ public class VerificationServiceTest {
 
         verify(userRepository, times(1)).findById(anyLong());
         verify(userVerificationRepository, never()).save(any());
-        verify(javaMailSender, never()).send(any(SimpleMailMessage.class));
+        verify(messageSenderService, never()).sendEmail(anyString(), anyString(), anyString());
     }
 
     @Test
@@ -266,14 +264,14 @@ public class VerificationServiceTest {
         when(userRepository.findByGuid(anyString())).thenReturn(Optional.of(user));
         when(userVerificationRepository.save(any())).thenReturn(userVerification);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        doNothing().when(javaMailSender).send(any(SimpleMailMessage.class));
+        doNothing().when(messageSenderService).sendEmail(anyString(), anyString(), anyString());
 
         verificationService.resendEmailVerification(user.getGuid());
 
         verify(userRepository, times(1)).findByGuid(anyString());
         verify(userVerificationRepository, times(1)).save(any());
         verify(userRepository, times(1)).findById(anyLong());
-        verify(javaMailSender, times(1)).send(any(SimpleMailMessage.class));
+        verify(messageSenderService, times(1)).sendEmail(anyString(), anyString(), anyString());
     }
 
     @Test

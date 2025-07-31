@@ -28,8 +28,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AuthControllerTest extends BaseControllerTest {
-    private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private final static String INVALID_CREDENTIALS = "Invalid credentials.";
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final String INVALID_CREDENTIALS = "Invalid credentials.";
     @MockitoBean
     private AuthenticationService authenticationService;
 

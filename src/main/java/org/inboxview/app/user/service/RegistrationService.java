@@ -12,13 +12,12 @@ import org.inboxview.app.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class RegistrationService {
-    private final static String USER_EXIST_ERROR = "Username already exists.";
+    private static final String USER_EXIST_ERROR = "Username already exists.";
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final VerificationService verificationService;

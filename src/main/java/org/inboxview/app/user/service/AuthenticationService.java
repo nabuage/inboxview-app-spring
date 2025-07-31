@@ -28,8 +28,8 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    private final static String INVALID_CREDENTIALS = "Invalid credentials.";
-    private final static String NOT_VERIFIED = "User is not verified.";
+    private static final String INVALID_CREDENTIALS = "Invalid credentials.";
+    private static final String NOT_VERIFIED = "User is not verified.";
 
     @Value("${jwt.refresh-token-ttl}")
     private Duration ttl;

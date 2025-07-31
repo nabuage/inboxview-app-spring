@@ -60,4 +60,16 @@ public class User {
     @Version
     private int version;
 
+    @Column(name = "password_reset_token")
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_date_requested")
+    private OffsetDateTime passwordResetDateRequested;
+
+    @Column(name = "password_reset_count")
+    private Long passwordResetCount;
+
+    @Column(name = "password_date_reset")
+    private OffsetDateTime passwordDateReset;
+
 }

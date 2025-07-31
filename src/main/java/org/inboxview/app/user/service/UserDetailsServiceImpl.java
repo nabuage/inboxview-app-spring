@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-    private final static String USER_NOT_FOUND_ERROR = "Username is not found.";
+    private static final String USER_NOT_FOUND_ERROR = "Username is not found.";
     private final UserRepository userRepository;
 
     @Override

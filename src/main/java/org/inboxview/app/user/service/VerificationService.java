@@ -12,8 +12,6 @@ import org.inboxview.app.user.mapper.UserMapper;
 import org.inboxview.app.user.repository.UserRepository;
 import org.inboxview.app.user.repository.UserVerificationRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,15 +22,15 @@ import lombok.RequiredArgsConstructor;
 public class VerificationService {
     private final UserRepository userRepository;
     private final UserVerificationRepository userVerificationRepository;
-    private final JavaMailSender mailSender;
     private final UserMapper userMapper;
-    private final static String SUBJECT = "Email verification";
-    private final static String BODY = "Here's your link to verify your email: %sapi/registration/email/verify?id=%s&code=%s";
-    private final static int MAX_ATTEMPT_COUNT = 10;
-    private final static Long MAX_SECONDS_EXPIRATION = 86400L;
-    private final static String INVALID_CODE_ERROR = "Invalid code.";
-    private final static String USER_NOT_FOUND_ERROR = "User is not found.";
-    private final static String ALREADY_VERIFIED_ERROR = "Email already verified.";
+    private final MessageSenderService messageSenderService;
+    private static final String SUBJECT = "Email verification";
+    private static final String BODY = "Here's your link to verify your email: %sapi/registration/email/verify?id=%s&code=%s";
+    private static final int MAX_ATTEMPT_COUNT = 10;
+    private static final Long MAX_SECONDS_EXPIRATION = 86400L;
+    private static final String INVALID_CODE_ERROR = "Invalid code.";
+    private static final String USER_NOT_FOUND_ERROR = "User is not found.";
+    private static final String ALREADY_VERIFIED_ERROR = "Email already verified.";
 
     @Value("${app.from-email}")
     private String FROM;
@@ -48,13 +46,7 @@ public class VerificationService {
         var email = user.getEmail();
         var guid = user.getGuid();
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setFrom(FROM);
-        message.setSubject(SUBJECT);
-        message.setText(BODY.formatted(url, guid, code));
-
-        mailSender.send(message);
+        messageSenderService.sendEmail(email, SUBJECT, BODY.formatted(url, guid, code));
     }
 
     private String generateEmailToken(Long userId) {

@@ -9,8 +9,13 @@ import org.springframework.data.jpa.repository.Query;
 public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.username = ?1 AND u.dateDeleted IS NULL")
     Optional<User> findByUsername(String username);
+    
     @Query("SELECT u FROM User u WHERE u.guid = ?1 AND u.dateDeleted IS NULL")
     Optional<User> findByGuid(String guid);
+
+    @Query("SELECT u FROM User u WHERE u.guid = ?1 AND u.passwordResetToken = ?2 AND u.passwordResetDateRequested IS NOT NULL AND u.dateDeleted IS NULL")
+    Optional<User> findByGuidAndPasswordResetToken(String guid, String token);
+    
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
 }
